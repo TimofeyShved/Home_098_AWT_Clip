@@ -17,9 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 
-class Surface extends JPanel
-        implements ActionListener {
+class Surface extends JPanel implements ActionListener {
 
+    // переменные
     private Timer timer;
     private double rotate = 1;
     private int pos_x = 8;
@@ -29,19 +29,16 @@ class Surface extends JPanel
     private final int RADIUS = 60;
 
 
-    public Surface() {
-
+    public Surface() { // конструктор
         initTimer();
     }
 
-    private void initTimer() {
-
+    private void initTimer() { // инициализация таймера
         timer = new Timer(10, this);
         timer.start();
     }
 
-    private void doDrawing(Graphics g) {
-
+    private void doDrawing(Graphics g) { // прорисовка графики
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -50,11 +47,14 @@ class Surface extends JPanel
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_QUALITY);
 
+        // Поскольку мы не создавали копию Graphics2Dобъекта,
+        // мы сохраняем старый клип для дальнейшего использования. В конце концов, мы должны сбросить клип на исходный.
         Shape oldClip = g2d.getClip();
 
         int w = getWidth();
         int h = getHeight();
 
+        // Прямоугольник вращается. Он всегда располагается посередине панели.
         Rectangle rect = new Rectangle(0, 0, 200, 80);
 
         AffineTransform tx = new AffineTransform();
@@ -64,15 +64,21 @@ class Surface extends JPanel
         Ellipse2D circle = new Ellipse2D.Double(pos_x, pos_y,
                 RADIUS, RADIUS);
 
+        // Здесь мы получаем форму повернутого прямоугольника.
         GeneralPath path = new GeneralPath();
         path.append(tx.createTransformedShape(rect), false);
 
+        // Здесь мы ограничиваем рисование пересечением двух фигур.
+        // Если они накладываются друг на друга, внутренняя часть получившейся формы заполняется цветом.
         g2d.clip(circle);
         g2d.clip(path);
 
-        g2d.setPaint(new Color(110, 110, 110));
-        g2d.fill(circle);
+        g2d.setPaint(new Color(110, 110, 110)); // цвет
+        g2d.fill(circle); // прорисовка круга
 
+        // С помощью этого setClip()метода мы сбрасываем область клипа на старый клип, прежде чем рисовать фигуры.
+        // В отличие от clip()метода, setClip() не объединяет области обрезки.
+        // Он сбрасывает клип в новую область. Поэтому этот метод следует использовать исключительно при восстановлении старой обоймы.
         g2d.setClip(oldClip);
 
         g2d.draw(circle);
@@ -82,11 +88,10 @@ class Surface extends JPanel
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         doDrawing(g);
     }
 
-    public void step() {
+    public void step() { // шаг трансформации
 
         int w = getWidth();
         int h = getHeight();
@@ -122,29 +127,29 @@ class Surface extends JPanel
 
 public class ClippingShapesEx extends JFrame {
 
-    public ClippingShapesEx() {
-        initUI();
+    public ClippingShapesEx() { // конструктор
+        initUI(); // инициализация класса
     }
 
     private void initUI() {
 
-        setTitle("Clipping shapes");
+        setTitle("Clipping shapes"); // наш заголовок
 
-        add(new Surface());
+        add(new Surface());  // добавление наших объектов
 
-        setSize(350, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(350, 300); // размер
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // выход
         setLocationRelativeTo(null);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { // Главный класс
 
-        EventQueue.invokeLater(new Runnable() {
+        EventQueue.invokeLater(new Runnable() { // поток
 
             @Override
             public void run() {
-                ClippingShapesEx ex = new ClippingShapesEx();
-                ex.setVisible(true);
+                ClippingShapesEx ex = new ClippingShapesEx();  // запуск нашего класса ClippingShapesEx
+                ex.setVisible(true); // видимость
             }
         });
     }
